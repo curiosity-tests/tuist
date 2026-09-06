@@ -85,7 +85,7 @@ permissions:
 env:
   # The one variable that separates the arms: on baseline, action-checkout
   # skips its Set up Chalk step entirely.
-  CHALK_ON: ${{ github.event_name == 'workflow_dispatch' && inputs.leg != 'baseline' }}
+  CHALK_ON: ${{ inputs.leg == 'instrumented' }}
   MISE_VERSION: "2026.5.15"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   MISE_GITHUB_TOKEN: ${{ secrets.TUIST_CLI_GITHUB_TOKEN || github.token }}
@@ -112,7 +112,7 @@ jobs:
     container:
       image: swift:6.2
     timeout-minutes: 30
-    if: github.event.pull_request.draft == false || github.event_name != 'pull_request'
+    if: github.event.pull_request.draft == false || 'push' != 'pull_request'
     steps:
       - name: Install curl/bash for action-checkout (racecar; ungated, both arms)
         shell: sh
@@ -189,7 +189,7 @@ jobs:
     container:
       image: swift:6.2
     timeout-minutes: 30
-    if: github.event.pull_request.draft == false || github.event_name != 'pull_request'
+    if: github.event.pull_request.draft == false || 'push' != 'pull_request'
     steps:
       - name: Install curl/bash for action-checkout (racecar; ungated, both arms)
         shell: sh
