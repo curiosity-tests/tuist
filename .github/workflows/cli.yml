@@ -18,65 +18,65 @@ on:
         default: ""
   push:
     branches:
-      - main
+    - main
     paths:
-      - "cli/TuistCacheEE"
-      - "cli/TuistCacheEE/**"
-      - "cli/Sources/**"
-      - "cli/Tests/**"
-      - "cli/Templates/**"
+    - "cli/TuistCacheEE"
+    - "cli/TuistCacheEE/**"
+    - "cli/Sources/**"
+    - "cli/Tests/**"
+    - "cli/Templates/**"
       # cas-plugin (the Xcode CAS dylib + tuist-cas-proxy) is built and shipped
       # inside the CLI, so its changes must run CLI build/test/acceptance.
-      - "cas-plugin/**"
+    - "cas-plugin/**"
       # SwifterPMCore is compiled into the command-line binary through
       # TuistSupport, so its changes must run the command-line test suite.
-      - "swifterpm/**"
+    - "swifterpm/**"
       # XCResultParser lives with the server's xcresult NIF but is built into
       # the command-line binary from those sources, so its changes must run the
       # command-line test suite.
-      - "server/native/xcresult_nif/Sources/XCResultParser/**"
-      - "*.swift"
-      - ".github/workflows/cli.yml"
-      - "mise/tasks/cli/lint.sh"
-      - "mise/tasks/cli/ee.sh"
-      - "mise.toml"
-      - "mise.lock"
-      - "examples/xcode/**"
-      - "Tuist/**"
-      - ".xcode-version"
-      - ".swiftpm/**"
-      - "Package.swift"
-      - "Package.resolved"
+    - "server/native/xcresult_nif/Sources/XCResultParser/**"
+    - "*.swift"
+    - ".github/workflows/cli.yml"
+    - "mise/tasks/cli/lint.sh"
+    - "mise/tasks/cli/ee.sh"
+    - "mise.toml"
+    - "mise.lock"
+    - "examples/xcode/**"
+    - "Tuist/**"
+    - ".xcode-version"
+    - ".swiftpm/**"
+    - "Package.swift"
+    - "Package.resolved"
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     paths:
-      - "cli/TuistCacheEE"
-      - "cli/TuistCacheEE/**"
-      - "cli/Sources/**"
-      - "cli/Tests/**"
-      - "cli/Templates/**"
+    - "cli/TuistCacheEE"
+    - "cli/TuistCacheEE/**"
+    - "cli/Sources/**"
+    - "cli/Tests/**"
+    - "cli/Templates/**"
       # cas-plugin (the Xcode CAS dylib + tuist-cas-proxy) is built and shipped
       # inside the CLI, so its changes must run CLI build/test/acceptance.
-      - "cas-plugin/**"
+    - "cas-plugin/**"
       # SwifterPMCore is compiled into the command-line binary through
       # TuistSupport, so its changes must run the command-line test suite.
-      - "swifterpm/**"
+    - "swifterpm/**"
       # XCResultParser lives with the server's xcresult NIF but is built into
       # the command-line binary from those sources, so its changes must run the
       # command-line test suite.
-      - "server/native/xcresult_nif/Sources/XCResultParser/**"
-      - "*.swift"
-      - ".github/workflows/cli.yml"
-      - "mise/tasks/cli/lint.sh"
-      - "mise/tasks/cli/ee.sh"
-      - "mise.toml"
-      - "mise.lock"
-      - "examples/xcode/**"
-      - "Tuist/**"
-      - ".xcode-version"
-      - ".swiftpm/**"
-      - "Package.swift"
-      - "Package.resolved"
+    - "server/native/xcresult_nif/Sources/XCResultParser/**"
+    - "*.swift"
+    - ".github/workflows/cli.yml"
+    - "mise/tasks/cli/lint.sh"
+    - "mise/tasks/cli/ee.sh"
+    - "mise.toml"
+    - "mise.lock"
+    - "examples/xcode/**"
+    - "Tuist/**"
+    - ".xcode-version"
+    - ".swiftpm/**"
+    - "Package.swift"
+    - "Package.resolved"
 
 permissions:
   contents: read
@@ -114,8 +114,8 @@ jobs:
     timeout-minutes: 30
     if: github.event.pull_request.draft == false || 'push' != 'pull_request'
     steps:
-      - name: Install curl/bash for action-checkout (racecar; ungated, both arms)
-        shell: sh
+    - name: Install curl/bash for action-checkout (racecar; ungated, both arms)
+      shell: sh
         # Best-effort probe, never a gate. Inside a container job running as a
         # non-root user, apt-get cannot write /var/lib/apt/lists and exits 100,
         # which failed ardupilot's build job at step 3 before any of its own work
@@ -123,77 +123,148 @@ jobs:
         # trailing `exit 0` would never be reached -- hence `|| true` per branch
         # plus continue-on-error. If curl/bash are genuinely missing,
         # action-checkout fails next with a message that names the real problem.
-        continue-on-error: true
-        run: |
-          command -v curl >/dev/null 2>&1 && command -v bash >/dev/null 2>&1 && exit 0
-          SUDO=
-          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then SUDO=sudo; fi
-          if command -v apt-get >/dev/null 2>&1; then
-            { $SUDO apt-get update -qq && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y -qq curl ca-certificates bash; } || true
-          elif command -v apk >/dev/null 2>&1; then $SUDO apk add --no-cache curl ca-certificates bash || true
-          elif command -v dnf >/dev/null 2>&1; then $SUDO dnf install -y curl ca-certificates bash || true
-          elif command -v yum >/dev/null 2>&1; then $SUDO yum install -y curl ca-certificates bash || true
-          elif command -v zypper >/dev/null 2>&1; then $SUDO zypper -n install curl ca-certificates bash || true
-          fi
-          exit 0
+      continue-on-error: true
+      run: |
+        command -v curl >/dev/null 2>&1 && command -v bash >/dev/null 2>&1 && exit 0
+        SUDO=
+        if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then SUDO=sudo; fi
+        if command -v apt-get >/dev/null 2>&1; then
+          { $SUDO apt-get update -qq && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y -qq curl ca-certificates bash; } || true
+        elif command -v apk >/dev/null 2>&1; then $SUDO apk add --no-cache curl ca-certificates bash || true
+        elif command -v dnf >/dev/null 2>&1; then $SUDO dnf install -y curl ca-certificates bash || true
+        elif command -v yum >/dev/null 2>&1; then $SUDO yum install -y curl ca-certificates bash || true
+        elif command -v zypper >/dev/null 2>&1; then $SUDO zypper -n install curl ca-certificates bash || true
+        fi
+        exit 0
 
-      - name: Checkout code
-        uses: crashappsec/action-checkout@e9ff46a65f6403d9d88b87d248c3dfa41550ec75
-        with:
-          chalk: ${{ env.CHALK_ON }}
-          profile: ${{ inputs.profile || 'curiosity-tests-racecar' }}
-          observables_continue_on_error: false
-          lfs: false
-      - name: Assert instrumentation is live
-        if: env.CHALK_ON == 'true'
-        run: |
-          test -n "${CURIOSITY_ROOT:-}" || { echo "::error::CURIOSITY_ROOT unset - observables never installed"; exit 1; }
-          test -S "${CURIOSITY_SOCKET_NAME:?socket name unset}" || { echo "::error::co-hostd socket absent"; exit 1; }
-
-      - name: Restore cache
-        id: cache-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: .build
-          key: linux-cli-${{ hashFiles('Package.resolved', 'Package.swift') }}
-          restore-keys: |
-            linux-cli-${{ hashFiles('Package.swift') }}-
-      - name: Install caddy
-        run: apt-get update -qq && apt-get install -y --no-install-recommends caddy
+    - name: Checkout code
+      uses: crashappsec/action-checkout@e9ff46a65f6403d9d88b87d248c3dfa41550ec75
+      with:
+        chalk: ${{ env.CHALK_ON }}
+        profile: ${{ inputs.profile || 'curiosity-tests-racecar' }}
+        observables_continue_on_error: false
+        lfs: false
+    - name: Restore cache
+      id: cache-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: .build
+        key: linux-cli-${{ hashFiles('Package.resolved', 'Package.swift') }}
+        restore-keys: |
+          linux-cli-${{ hashFiles('Package.swift') }}-
+    - name: Install caddy
+      run: apt-get update -qq && apt-get install -y --no-install-recommends caddy
       # Swift 6.2's FoundationNetworking traps on a redirect served over HTTP/2
       # (see #12229), and the registry answers 303 to storage over h2. Terminating
       # the first hop as plaintext HTTP/1.1 removes the precondition; the redirect
       # target negotiates http/1.1 on its own, so only this hop needs forcing.
-      - name: Front the registry with an HTTP/1.1 proxy
-        shell: bash
-        run: |
-          nohup caddy reverse-proxy \
-            --from :8080 --to https://tuist.dev --change-host-header \
-            > /tmp/registry-proxy.log 2>&1 &
-          for _ in $(seq 1 30); do
-            if (exec 3<>/dev/tcp/127.0.0.1/8080) 2>/dev/null; then
-              exec 3>&-
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "::error::registry proxy did not start listening on :8080"
-          cat /tmp/registry-proxy.log || true
-          exit 1
-      - name: Point SwiftPM at the proxy
-        run: swift package-registry set --allow-insecure-http http://localhost:8080/api/registry/swift
-      - name: Resolve dependencies
-        run: swift package resolve --replace-scm-with-registry
-      - name: Build tuist CLI
-        run: swift build --target tuist --replace-scm-with-registry --force-resolved-versions
-      - name: Save cache
-        if: github.ref == 'refs/heads/main'
-        id: cache-save
-        uses: actions/cache/save@v4
-        with:
-          path: .build
-          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+    - name: Front the registry with an HTTP/1.1 proxy
+      shell: bash
+      run: |
+        nohup caddy reverse-proxy \
+          --from :8080 --to https://tuist.dev --change-host-header \
+          > /tmp/registry-proxy.log 2>&1 &
+        for _ in $(seq 1 30); do
+          if (exec 3<>/dev/tcp/127.0.0.1/8080) 2>/dev/null; then
+            exec 3>&-
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "::error::registry proxy did not start listening on :8080"
+        cat /tmp/registry-proxy.log || true
+        exit 1
+    - name: Point SwiftPM at the proxy
+      run: swift package-registry set --allow-insecure-http http://localhost:8080/api/registry/swift
+    - name: Resolve dependencies
+      run: swift package resolve --replace-scm-with-registry
+    - name: Build tuist CLI
+      run: swift build --target tuist --replace-scm-with-registry --force-resolved-versions
+    - name: Save cache
+      if: github.ref == 'refs/heads/main'
+      id: cache-save
+      uses: actions/cache/save@v4
+      with:
+        path: .build
+        key: ${{ steps.cache-restore.outputs.cache-primary-key }}
 
+    - name: Check observables and crashes
+      if: always() && env.CHALK_ON == 'true'
+      shell: bash
+      run: |
+        set -uo pipefail
+        root="${CURIOSITY_ROOT:-}"
+        home="${CURIOSITY_HOME:-/mnt/curiosity}"
+        obs="${home}/observables"
+        fail=0
+
+        echo "::group::curiosity layout"
+        echo "CURIOSITY_ROOT=${root:-<unset>}"
+        echo "CURIOSITY_HOME=${home}"
+        ls -la "${obs}" 2>/dev/null || echo "no observables dir at ${obs}"
+        echo "::endgroup::"
+
+        # Observables for THIS run+attempt. The prefix matters: a stale file from an
+        # earlier run on the same mount would otherwise pass.
+        prefix="${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}"
+        shopt -s nullglob
+        mine=("${obs}/${prefix}"*)
+        if [ ${#mine[@]} -eq 0 ]; then
+          mine=("${obs}/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-observables"*)
+        fi
+        if [ ${#mine[@]} -eq 0 ]; then
+          echo "::error::no observables for run ${prefix} in ${obs} - instrumentation produced nothing"
+          fail=1
+        else
+          echo "observables present: ${#mine[@]} file(s)"
+          printf '  %s\n' "${mine[@]}"
+        fi
+
+        for f in "${mine[@]}"; do
+          case "$f" in
+            *.jsonl|*.json|*.combined)
+              if ! jq --slurp "." "$f" > /dev/null 2>&1; then
+                echo "::error::observables do not parse: $f"
+                fail=1
+              fi
+              ;;
+          esac
+        done
+
+        # Crash thresholds copied from check-run: a few null frames are noise, more than
+        # five is a stack walk into nothing.
+        for f in "${root}"/log/co-host*.log "${home}"/log/co-host*.log; do
+          [ -f "$f" ] || continue
+          echo "Asserting that there is no crash in $f"
+          if [ "$(grep -c 'p 00000000' "$f" 2>/dev/null || echo 0)" -gt 5 ] \
+            || [ "$(grep -E -c 'FATAL: Uncaught signal|Address not mapped at|RAX 0x.*RBX 0x' "$f" 2>/dev/null || echo 0)" -gt 1 ]; then
+            echo "::error::crash signature in $f"
+            grep -E 'FATAL: Uncaught signal|Address not mapped at' "$f" | head -5 || true
+            fail=1
+          fi
+        done
+
+        cores=("${root}"/coredump.* "${home}"/coredump.*)
+        if [ ${#cores[@]} -gt 0 ]; then
+          echo "::error::coredump present: ${cores[*]}"
+          fail=1
+        fi
+
+        for f in "${root}"/runc.log "${root}"/runc.global.log \
+                 "${home}"/runc.log "${home}"/runc.global.log; do
+          [ -f "$f" ] || continue
+          if grep -q '^E:' "$f"; then
+            echo "::error::error in $f"
+            grep '^E:' "$f" | head -5
+            fail=1
+          fi
+        done
+
+        if [ "$fail" -ne 0 ]; then
+          echo "::error::instrumentation check FAILED"
+          exit 1
+        fi
+        echo "instrumentation check passed"
   cli-linux-unit-tests:
     name: Linux Unit Tests
     runs-on: ubuntu-latest
@@ -202,8 +273,8 @@ jobs:
     timeout-minutes: 30
     if: github.event.pull_request.draft == false || 'push' != 'pull_request'
     steps:
-      - name: Install curl/bash for action-checkout (racecar; ungated, both arms)
-        shell: sh
+    - name: Install curl/bash for action-checkout (racecar; ungated, both arms)
+      shell: sh
         # Best-effort probe, never a gate. Inside a container job running as a
         # non-root user, apt-get cannot write /var/lib/apt/lists and exits 100,
         # which failed ardupilot's build job at step 3 before any of its own work
@@ -211,73 +282,144 @@ jobs:
         # trailing `exit 0` would never be reached -- hence `|| true` per branch
         # plus continue-on-error. If curl/bash are genuinely missing,
         # action-checkout fails next with a message that names the real problem.
-        continue-on-error: true
-        run: |
-          command -v curl >/dev/null 2>&1 && command -v bash >/dev/null 2>&1 && exit 0
-          SUDO=
-          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then SUDO=sudo; fi
-          if command -v apt-get >/dev/null 2>&1; then
-            { $SUDO apt-get update -qq && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y -qq curl ca-certificates bash; } || true
-          elif command -v apk >/dev/null 2>&1; then $SUDO apk add --no-cache curl ca-certificates bash || true
-          elif command -v dnf >/dev/null 2>&1; then $SUDO dnf install -y curl ca-certificates bash || true
-          elif command -v yum >/dev/null 2>&1; then $SUDO yum install -y curl ca-certificates bash || true
-          elif command -v zypper >/dev/null 2>&1; then $SUDO zypper -n install curl ca-certificates bash || true
-          fi
-          exit 0
+      continue-on-error: true
+      run: |
+        command -v curl >/dev/null 2>&1 && command -v bash >/dev/null 2>&1 && exit 0
+        SUDO=
+        if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then SUDO=sudo; fi
+        if command -v apt-get >/dev/null 2>&1; then
+          { $SUDO apt-get update -qq && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y -qq curl ca-certificates bash; } || true
+        elif command -v apk >/dev/null 2>&1; then $SUDO apk add --no-cache curl ca-certificates bash || true
+        elif command -v dnf >/dev/null 2>&1; then $SUDO dnf install -y curl ca-certificates bash || true
+        elif command -v yum >/dev/null 2>&1; then $SUDO yum install -y curl ca-certificates bash || true
+        elif command -v zypper >/dev/null 2>&1; then $SUDO zypper -n install curl ca-certificates bash || true
+        fi
+        exit 0
 
-      - name: Checkout code
-        uses: crashappsec/action-checkout@e9ff46a65f6403d9d88b87d248c3dfa41550ec75
-        with:
-          chalk: ${{ env.CHALK_ON }}
-          profile: ${{ inputs.profile || 'curiosity-tests-racecar' }}
-          observables_continue_on_error: false
-          lfs: false
-      - name: Assert instrumentation is live
-        if: env.CHALK_ON == 'true'
-        run: |
-          test -n "${CURIOSITY_ROOT:-}" || { echo "::error::CURIOSITY_ROOT unset - observables never installed"; exit 1; }
-          test -S "${CURIOSITY_SOCKET_NAME:?socket name unset}" || { echo "::error::co-hostd socket absent"; exit 1; }
-
-      - name: Restore cache
-        id: cache-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: .build
-          key: linux-cli-${{ hashFiles('Package.resolved', 'Package.swift') }}
-          restore-keys: |
-            linux-cli-${{ hashFiles('Package.swift') }}-
-      - name: Install caddy
-        run: apt-get update -qq && apt-get install -y --no-install-recommends caddy
+    - name: Checkout code
+      uses: crashappsec/action-checkout@e9ff46a65f6403d9d88b87d248c3dfa41550ec75
+      with:
+        chalk: ${{ env.CHALK_ON }}
+        profile: ${{ inputs.profile || 'curiosity-tests-racecar' }}
+        observables_continue_on_error: false
+        lfs: false
+    - name: Restore cache
+      id: cache-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: .build
+        key: linux-cli-${{ hashFiles('Package.resolved', 'Package.swift') }}
+        restore-keys: |
+          linux-cli-${{ hashFiles('Package.swift') }}-
+    - name: Install caddy
+      run: apt-get update -qq && apt-get install -y --no-install-recommends caddy
       # Swift 6.2's FoundationNetworking traps on a redirect served over HTTP/2
       # (see #12229), and the registry answers 303 to storage over h2. Terminating
       # the first hop as plaintext HTTP/1.1 removes the precondition; the redirect
       # target negotiates http/1.1 on its own, so only this hop needs forcing.
-      - name: Front the registry with an HTTP/1.1 proxy
-        shell: bash
-        run: |
-          nohup caddy reverse-proxy \
-            --from :8080 --to https://tuist.dev --change-host-header \
-            > /tmp/registry-proxy.log 2>&1 &
-          for _ in $(seq 1 30); do
-            if (exec 3<>/dev/tcp/127.0.0.1/8080) 2>/dev/null; then
-              exec 3>&-
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "::error::registry proxy did not start listening on :8080"
-          cat /tmp/registry-proxy.log || true
+    - name: Front the registry with an HTTP/1.1 proxy
+      shell: bash
+      run: |
+        nohup caddy reverse-proxy \
+          --from :8080 --to https://tuist.dev --change-host-header \
+          > /tmp/registry-proxy.log 2>&1 &
+        for _ in $(seq 1 30); do
+          if (exec 3<>/dev/tcp/127.0.0.1/8080) 2>/dev/null; then
+            exec 3>&-
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "::error::registry proxy did not start listening on :8080"
+        cat /tmp/registry-proxy.log || true
+        exit 1
+    - name: Point SwiftPM at the proxy
+      run: swift package-registry set --allow-insecure-http http://localhost:8080/api/registry/swift
+    - name: Resolve dependencies
+      run: swift package resolve --replace-scm-with-registry
+    - name: Run unit tests
+      run: swift test --replace-scm-with-registry
+    - name: Save cache
+      if: github.ref == 'refs/heads/main'
+      id: cache-save
+      uses: actions/cache/save@v4
+      with:
+        path: .build
+        key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+    - name: Check observables and crashes
+      if: always() && env.CHALK_ON == 'true'
+      shell: bash
+      run: |
+        set -uo pipefail
+        root="${CURIOSITY_ROOT:-}"
+        home="${CURIOSITY_HOME:-/mnt/curiosity}"
+        obs="${home}/observables"
+        fail=0
+
+        echo "::group::curiosity layout"
+        echo "CURIOSITY_ROOT=${root:-<unset>}"
+        echo "CURIOSITY_HOME=${home}"
+        ls -la "${obs}" 2>/dev/null || echo "no observables dir at ${obs}"
+        echo "::endgroup::"
+
+        # Observables for THIS run+attempt. The prefix matters: a stale file from an
+        # earlier run on the same mount would otherwise pass.
+        prefix="${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}"
+        shopt -s nullglob
+        mine=("${obs}/${prefix}"*)
+        if [ ${#mine[@]} -eq 0 ]; then
+          mine=("${obs}/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-observables"*)
+        fi
+        if [ ${#mine[@]} -eq 0 ]; then
+          echo "::error::no observables for run ${prefix} in ${obs} - instrumentation produced nothing"
+          fail=1
+        else
+          echo "observables present: ${#mine[@]} file(s)"
+          printf '  %s\n' "${mine[@]}"
+        fi
+
+        for f in "${mine[@]}"; do
+          case "$f" in
+            *.jsonl|*.json|*.combined)
+              if ! jq --slurp "." "$f" > /dev/null 2>&1; then
+                echo "::error::observables do not parse: $f"
+                fail=1
+              fi
+              ;;
+          esac
+        done
+
+        # Crash thresholds copied from check-run: a few null frames are noise, more than
+        # five is a stack walk into nothing.
+        for f in "${root}"/log/co-host*.log "${home}"/log/co-host*.log; do
+          [ -f "$f" ] || continue
+          echo "Asserting that there is no crash in $f"
+          if [ "$(grep -c 'p 00000000' "$f" 2>/dev/null || echo 0)" -gt 5 ] \
+            || [ "$(grep -E -c 'FATAL: Uncaught signal|Address not mapped at|RAX 0x.*RBX 0x' "$f" 2>/dev/null || echo 0)" -gt 1 ]; then
+            echo "::error::crash signature in $f"
+            grep -E 'FATAL: Uncaught signal|Address not mapped at' "$f" | head -5 || true
+            fail=1
+          fi
+        done
+
+        cores=("${root}"/coredump.* "${home}"/coredump.*)
+        if [ ${#cores[@]} -gt 0 ]; then
+          echo "::error::coredump present: ${cores[*]}"
+          fail=1
+        fi
+
+        for f in "${root}"/runc.log "${root}"/runc.global.log \
+                 "${home}"/runc.log "${home}"/runc.global.log; do
+          [ -f "$f" ] || continue
+          if grep -q '^E:' "$f"; then
+            echo "::error::error in $f"
+            grep '^E:' "$f" | head -5
+            fail=1
+          fi
+        done
+
+        if [ "$fail" -ne 0 ]; then
+          echo "::error::instrumentation check FAILED"
           exit 1
-      - name: Point SwiftPM at the proxy
-        run: swift package-registry set --allow-insecure-http http://localhost:8080/api/registry/swift
-      - name: Resolve dependencies
-        run: swift package resolve --replace-scm-with-registry
-      - name: Run unit tests
-        run: swift test --replace-scm-with-registry
-      - name: Save cache
-        if: github.ref == 'refs/heads/main'
-        id: cache-save
-        uses: actions/cache/save@v4
-        with:
-          path: .build
-          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+        fi
+        echo "instrumentation check passed"
